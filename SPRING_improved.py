@@ -1,20 +1,19 @@
 
 # SPRING improved
 import numpy as np
-import scipy as sp
 import matplotlib.pyplot as plt
-import kafka_test.consumer_test as kst
-import kafka_test.producer_test as pst
+import time
+
 
 # 定义差值
 def dist_func(x, y):
-    return abs(x - y)[0]
+    return abs(x - y)
 
 # 确定查询序列，在此测试算法的序列为[1,2,3,2,1]
 Q = np.array([1,2,3,2,1])
 # Q的长度为m
 m = len(Q)
-Threshold = 1
+Threshold = 0.5
 
 
 # 定义一个可以更新的STWM矩阵，行数为m+1，第0行为0，第0列的1到m+1行为无限大
@@ -26,16 +25,22 @@ D[1:m+1,0] = np.inf # 第1个索引值到第m+1索引值是无限大
 # STWM保存最短路径索引的矩阵I
 I = np.zeros([m+1,n+1])
 
-while True:
-    S =
-    t =
-    st =
-    N =
+# 定义S总长度，用于测试
+S_voll = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,4,2,1,0,0,0,1,2,3,2,1,3,4,5,6,7])
+
+#生成已有的序列
+for N , st in enumerate(S_voll):
+    N = N+1
+    st = st
+    time.sleep(0.5)
+    # S =
+    # t =
+
 
     # wenn STWM nicht voll
     if N <= n:
         # STWM_D
-        for i in range (1,m):
+        for i in range (1,m+1):
             D[i,N] = dist_func(Q[i-1],st) + min(D[i-1,N] , D[i,N-1] , D[i-1,N-1])
 
             # STWM_I
@@ -49,47 +54,70 @@ while True:
                 elif min(D[i-1,N] , D[i,N-1] , D[i-1,N-1]) == D[i,N]:
                     I[i,N] = N
 
-        # 小于阈值时，路径回溯
-        if D[m, N] < Threshold:
-            i = m
-            j = N
-            path = []
-            count = 0
+        # # 小于阈值时，路径回溯
+        # if D[m, N] < Threshold:
+        #     i = m
+        #     j = N
+        #     path = []
+        #     count = 0
+        #
+        #     while True:
+        #         if i > 1 and j > I[m,N]:
+        #             path.append((i,j))
+        #             Min = min(D[i-1, j],D[i, j-1],D[i-1,j-1])
+        #
+        #             if Min == D[i - 1, j - 1]:  # 如果最小的点是左下角的点时
+        #                 i = i - 1
+        #                 j = j - 1
+        #                 count = count + 1
+        #
+        #             elif Min == D[i, j - 1]:  # 如果最小的点是左边的点时
+        #                 j = j - 1
+        #                 count = count + 1
+        #
+        #             elif Min == D[i - 1, j]:  # 如果最小的点是下面的点时
+        #                 i = i - 1
+        #                 count = count + 1
+        #
+        #         elif i == 1 and j == I[m,N]:  # 如果走到最下角了
+        #             path.append((i, j))
+        #             count = count + 1
+        #             break
+        #
+        #         # elif i == 1:  # 如果走到最左边了
+        #         #     path.append((i, j))
+        #         #     j = j - 1  # 只能往下走
+        #         #     count = count + 1
+        #
+        #         elif j == 0:  # 如果走到最下边了
+        #             path.append((i, j))
+        #             i = i - 1
+        #             count = count + 1
+        #     path = path[::-1]
 
-            while True:
-                if i > 1 and j > I[m,N]:
-                    path.append((i,j))
-                    Min = min(D[i-1, j],D[i, j-1],D[i-1,j-1])
+        plt.subplot(2,1,1)
+        plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
+        plt.title("STWM_D")
+        plt.xlim(0,41)
+        # if D[m, N] < Threshold:
+        #     x_path, y_path = zip(*path)
+        #     plt.plot(y_path, x_path)
+        plt.subplot(2,1,2)
+        plt.imshow(I, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
+        plt.xlim(0, 41)
+        plt.title("STWM_I")
+        plt.text(35, -7, str("Abtast:% d" % N))
+        plt.text(35, -5, str("Wert: % d" % st))
+        plt.show()
+        # x_path, y_path = zip(*path)
+        # plt.plot(y_path, x_path)
+        # plt.show()
+        # print(I)
+        print(D)
+        print("Abtast: % d" % N )
+        print("Wert: % d" % st)
+            # print(t)
 
-                    if Min == D[i - 1, j - 1]:  # 如果最小的点是左下角的点时
-                        i = i - 1
-                        j = j - 1
-                        count = count + 1
-
-                    elif Min == D[i, j - 1]:  # 如果最小的点是左边的点时
-                        j = j - 1
-                        count = count + 1
-
-                    elif Min == D[i - 1, j]:  # 如果最小的点是下面的点时
-                        i = i - 1
-                        count = count + 1
-
-                elif i == 1 and j == I[m,N]:  # 如果走到最下角了
-                    path.append((i, j))
-                    count = count + 1
-                    break
-
-                elif i == 1:  # 如果走到最左边了
-                    path.append((i, j))
-                    j = j - 1  # 只能往下走
-                    count = count + 1
-
-                elif j == 0:  # 如果走到最下边了
-                    path.append((i, j))
-                    i = i - 1
-                    count = count + 1
-            return path[::-1]
-        return D, I, st, t, N
 
 
 
@@ -151,8 +179,9 @@ while True:
                     path.append((i, j))
                     i = i - 1
                     count = count + 1
-            return path[::-1]
-        return D, I, st, t, N
+            print(path[::-1])
+        print (D, I, st, N)
+        #print(t)
 
 
 
