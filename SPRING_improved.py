@@ -96,27 +96,29 @@ for N , st in enumerate(S_voll):
                     count = count + 1
             print(path[::-1],count)
 
-
-
+        plt.figure(figsize=(16,14))
         plt.subplot(4,1,1)
         plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
         plt.title("STWM_D")
         plt.xlim(0,41)
+        plt.text(37, 8, str("Abtast:% d" % N))
+        plt.text(37, 7, str("Wert vom Data Stream: % d" % st))
         if D[m, N] < Threshold:
             x_path, y_path = zip(*path)
-            plt.plot(y_path, x_path)
+            plt.plot(y_path, x_path, linewidth=5.0)
 
         plt.subplot(4,1,2)
         plt.imshow(I, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
         plt.xlim(0, 41)
         plt.title("STWM_I")
-        plt.text(35, -7, str("Abtast:% d" % N))
-        plt.text(35, -5, str("Wert: % d" % st))
+        if D[m, N] < Threshold:
+            x_path, y_path = zip(*path)
+            plt.plot(y_path, x_path, linewidth=5.0)
 
         plt.subplot(4, 1, 3)
         plt.plot(Q, color='red')
-        plt.xlim(0, 4)
         plt.title("Query Sequence")
+
 
         plt.subplot(4,1,4)
         plt.plot(np.array(S),color = 'blue')
