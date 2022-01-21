@@ -18,7 +18,7 @@ Threshold = 1
 
 # 定义一个可以更新的STWM矩阵，行数为m+1，第0行为0，第0列的1到m+1行为无限大
 # STWM中保存累计DTW距离的STWM矩阵D
-n = 500 # STWM中的列数（索引0不算）
+n = 40 # STWM中的列数（索引0不算）
 D = np.zeros([m+1,n+1]) # D为m+1行，n+1列的矩阵
 D[1:m+1,0] = np.inf # 第1个索引值到第m+1索引值是无限大
 
@@ -26,14 +26,14 @@ D[1:m+1,0] = np.inf # 第1个索引值到第m+1索引值是无限大
 I = np.zeros([m+1,n+1])
 
 # 定义S总长度，用于测试
-S_voll = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,2,2,1,1,0,0,0,1,2,3,2,1,3,4,5])
+S_voll = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,2,2,1,1,0,0,6,1,2,3,2,1,3,4,5,6])
 S = []
 
 #生成已有的序列
 for N , st in enumerate(S_voll):
     N = N+1
     st = st
-    time.sleep(1)
+    time.sleep(0.3)
     S.append(st)
     # t =
 
@@ -100,7 +100,6 @@ for N , st in enumerate(S_voll):
         plt.subplot(4,1,1)
         plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
         plt.title("STWM_D")
-        plt.xlim(0,41)
         plt.text(37, 8, str("Abtast:% d" % N))
         plt.text(37, 7, str("Wert vom Data Stream: % d" % st))
         if D[m, N] < Threshold:
@@ -109,7 +108,6 @@ for N , st in enumerate(S_voll):
 
         plt.subplot(4,1,2)
         plt.imshow(I, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
-        plt.xlim(0, 41)
         plt.title("STWM_I")
         if D[m, N] < Threshold:
             x_path, y_path = zip(*path)
