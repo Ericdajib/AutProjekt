@@ -5,32 +5,41 @@ import matplotlib.pyplot as plt
 import time
 
 
-# 定义差值
+# define distance function
 def dist_func(x, y):
     return abs(x - y)
 
-# 确定查询序列，在此测试算法的序列为[1,2,3,2,1]
+# query sequence. Test:[1,2,3,2,1]
 Q = np.array([1,2,3,2,1])
-# Q的长度为m
+# length of query sequence
 m = len(Q)
+# threshold for if we find the path
 Threshold = 1
 
+'''
+ Define a STWM (subsequence time warping matrix) with (m+1) rows.
+ The 0th row is 0. The m to (m+1) row of the 0th colum is infinity.
+ Each cell of STWM contains two values: additive DTW distance and index of the first time of the matched subsequence.
+ It is implemented by creating two matrices: STWM_D and STWM_I
+'''
 
-# 定义一个可以更新的STWM矩阵，行数为m+1，第0行为0，第0列的1到m+1行为无限大
-# STWM中保存累计DTW距离的STWM矩阵D
-n = 40 # STWM中的列数（索引0不算）
-D = np.zeros([m+1,n+1]) # D为m+1行，n+1列的矩阵
-D[1:m+1,0] = np.inf # 第1个索引值到第m+1索引值是无限大
+# STWM_D for recording distance.
+n = 40 # length of the column (start from index 1)
+D = np.zeros([m+1,n+1]) # D is a matrix with m+1 rows and n+1 columns.
+D[1:m+1,0] = np.inf # value of the index 0 is infinity.
 
-# STWM保存最短路径索引的矩阵I
+# STWM_I for recording index.
 I = np.zeros([m+1,n+1])
 
-# 定义S总长度，用于测试
-S_voll = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,2,2,1,1,0,0,6,1,2,3,2,1,3,4,5,6])
-S = []
+# define S_full for test.
+S_full = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,2,2,1,1,0,0,6,1,2,3,2,1,3,4,5,6])
+S = [] # S is timestream.
 
-#生成已有的序列
-for N , st in enumerate(S_voll):
+# from S_full generate timestream S.
+# N: number of sampling
+# st: value of current sampling
+# t: time (read from sensor)
+for N , st in enumerate(S_full):
     N = N+1
     st = st
     time.sleep(0.3)
@@ -38,7 +47,7 @@ for N , st in enumerate(S_voll):
     # t =
 
 
-    # wenn STWM nicht voll
+    # when SWTM is not full
     if N <= n:
         # STWM_D
         for i in range (1,m+1):
@@ -55,7 +64,7 @@ for N , st in enumerate(S_voll):
                 elif min(D[i-1,N] , D[i,N-1] , D[i-1,N-1]) == D[i-1,N]:
                     I[i,N] = I[i-1,N]
 
-        # 小于阈值时，路径回溯
+        # find path to match if D[m, N] less than threshold we set.
         if D[m, N] < Threshold:
             i = m
             j = N
@@ -67,32 +76,32 @@ for N , st in enumerate(S_voll):
                     path.append((i,j))
                     Min = min(D[i-1, j],D[i, j-1],D[i-1,j-1])
 
-                    if Min == D[i - 1, j - 1]:  # 如果最小的点是左下角的点时
+                    if Min == D[i - 1, j - 1]:
                         i = i - 1
                         j = j - 1
                         count = count + 1
 
-                    elif Min == D[i, j - 1]:  # 如果最小的点是左边的点时
+                    elif Min == D[i, j - 1]:
                         j = j - 1
                         count = count + 1
 
-                    elif Min == D[i - 1, j]:  # 如果最小的点是下面的点时
+                    elif Min == D[i - 1, j]:
                         i = i - 1
                         count = count + 1
 
-                elif i == 1 and j == I[m,N]:  # 如果走到最下角了
+                elif i == 1 and j == I[m,N]: # If it goes to the bottom left, stop finding
                     path.append((i, j))
                     count = count + 1
                     break
 
-                elif i == 1:  # 如果走到最下边了
+                elif i == 1:  # If it goes to the bottom
                     path.append((i, j))
-                    j = j - 1  # 只能往左走
+                    j = j - 1  # go to the left
                     count = count + 1
 
-                elif j == I[m,N]:  # 如果走到最左边了
+                elif j == I[m,N]:  # If you go to the far left
                     path.append((i, j))
-                    i = i - 1  # 只能往下走
+                    i = i - 1  # go to the bottom
                     count = count + 1
             print(path[::-1],count)
 
