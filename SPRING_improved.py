@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import transforms
 import time
+import csv
+
 # from pyqtgraph.Qt import QtCore, QtGui
 # import pyqtgraph as pg
 
@@ -12,11 +14,12 @@ def dist_func(x, y):
     return abs(x - y)
 
 # query sequence. Test:[1,2,3,2,1]
-Q = np.array([1,2,3,2,1])
+Q = np.array([1,2,3,2,1,2,3,4,5,3,2,1])
+# Q = np.loadtxt("CMT_current.csv")
 # length of query sequence
 m = len(Q)
 # threshold for if we find the path
-Threshold = 1
+Threshold = 5
 
 '''
  Define a STWM (subsequence time warping matrix) with (m+1) rows.
@@ -34,7 +37,8 @@ D[1:m+1,0] = np.inf # value of the index 0 is infinity.
 I = np.zeros([m+1,n+1])
 
 # define S_full for test.
-S_full = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,2,2,1,1,0,0,6,1,2,3,2,1,3,4,5,1,2,3,1])
+S_full = np.array([1,2,3,2,1,2,3,4,5,3,2,1,7,7,12,15,4,3,8,14,5,1,2,3,2,1,2,3,4,5,6,3,2,1,1,0,4,2,3,6,7,8,2,2,3,2,3,2,3,4,1,2,3,2,1,2,2,3,4,5,6,3,2,1,0,8,10,3,4,5])
+# S_full = np.loadtxt("TEST_current.csv")
 S = [] # S is timestream.
 S_matched = 0
 ax = []
@@ -151,7 +155,7 @@ for N , st in enumerate(S_full):
         plt.plot(S_matched,color = "green")
         Sm_plt.set_title("matched sequence")
 
-        plt.pause(0.01)
+        plt.pause(0.002)
         plt.ioff()
 
 
@@ -258,7 +262,7 @@ for N , st in enumerate(S_full):
         plt.plot(S_matched,color = "green")
         Sm_plt.set_title("matched sequence")
 
-        plt.pause(0.01)
+        plt.pause(0.002)
         plt.ioff()
 
 
