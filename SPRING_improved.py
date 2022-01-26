@@ -2,8 +2,10 @@
 # SPRING improved
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import transforms
 import time
-
+# from pyqtgraph.Qt import QtCore, QtGui
+# import pyqtgraph as pg
 
 # define distance function
 def dist_func(x, y):
@@ -34,16 +36,18 @@ I = np.zeros([m+1,n+1])
 # define S_full for test.
 S_full = np.array([1,2,3,2,1,3,4,5,4,3,1,2,3,3,2,1,3,4,3,4,3,1,2,3,2,2,1,1,0,0,6,1,2,3,2,1,3,4,5,1,2,3,1])
 S = [] # S is timestream.
-
+S_matched = 0
+ax = []
+ay = []
 # from S_full generate timestream S.
 # N: number of sampling
 # st: value of current sampling
 # t: time (read from sensor)
 for N , st in enumerate(S_full):
-    N = N+1
     st = st
-    time.sleep(0.3)
     S.append(st)
+    time.sleep(0.1)
+    N = N+1
     # t =
 
     # when SWTM is not full
@@ -69,6 +73,7 @@ for N , st in enumerate(S_full):
             j = N
             path = []
             count = 0
+            S_matched = S[int(I[m, N])-1:N]
 
             while True:
                 if i > 1 and j > I[m,N]:
@@ -104,44 +109,50 @@ for N , st in enumerate(S_full):
                     count = count + 1
             print(path[::-1],count)
 
-        # plot
-        plt.figure(figsize=(16,14))
-        plt.subplot(4,1,1)
-        plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
-        plt.title("STWM_D")
-        plt.text(37, 8, str("Abtast:% d" % N))
-        plt.text(37, 7, str("Wert vom Data Stream: % d" % st))
-        if D[m, N] < Threshold:
-            x_path, y_path = zip(*path)
-            plt.plot(y_path, x_path, linewidth=5.0)
-
-        plt.subplot(4,1,2)
-        plt.imshow(I, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
-        plt.title("STWM_I")
-        if D[m, N] < Threshold:
-            x_path, y_path = zip(*path)
-            plt.plot(y_path, x_path, linewidth=5.0)
-
-        plt.subplot(4, 1, 3)
-        plt.plot(Q, color='red')
-        plt.title("Query Sequence")
-
-        plt.subplot(4,1,4)
-        plt.plot(np.array(S),color = 'blue')
-        plt.title("Data Stream")
-
-        plt.show()
-        plt.close()
-        # x_path, y_path = zip(*path)
-        # plt.plot(y_path, x_path)
-        # plt.show()
-        # print(I)
-
+            print(S_matched)
         print(D)
         print(I)
-        print("Abtast: % d" % N )
+        print("Abtast: % d" % N)
         print("Wert: % d" % st)
-            # print(t)
+        # print(t)
+
+
+        # plot real-time data
+        plt.ion()
+        plt.clf()
+
+        # plot STWM_D
+        D_plt = plt.subplot2grid((2,3),(0,1),colspan=2)
+        D_plt.set_title("STWM_D")
+        D_plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
+
+        if D[m, N] < Threshold:
+            x_path, y_path = zip(*path)
+            plt.plot(y_path, x_path)
+
+        # plot query sequence
+        Q_plt = plt.subplot2grid((2,3),(0,0),colspan=1)
+        # base = plt.gca().transData
+        # rot = transforms.Affine2D().rotate_deg(90)
+        # plt.plot(Q,transform = rot+base)
+        plt.plot(Q,color = "red")
+        Q_plt.set_title("query sequence")
+
+        # plot datastream
+        S_plt = plt.subplot2grid((2,3),(1,1),colspan=2)
+        ax.append(N)
+        ay.append(st)
+        plt.plot(ax, ay)
+        # plt.xlim(N,N+3*m)
+        S_plt.set_title("datastream")
+
+        # plot matched sequence
+        Sm_plt = plt.subplot2grid((2,3),(1,0),colspan=1)
+        plt.plot(S_matched,color = "green")
+        Sm_plt.set_title("matched sequence")
+
+        plt.pause(0.01)
+        plt.ioff()
 
 
 
@@ -171,6 +182,7 @@ for N , st in enumerate(S_full):
             j = n
             path = []
             count = 0
+            S_matched = S[int(I[m, n])-1:N]
 
             while True:
                 if i > 1 and j > (I[m, n] - (N-n)):
@@ -205,43 +217,50 @@ for N , st in enumerate(S_full):
                     i = i - 1   # go to the bottom
                     count = count + 1
             print(path[::-1],count)
-
-
-        # plot
-        plt.figure(figsize=(16, 14))
-        plt.subplot(4, 1, 1)
-        plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
-        plt.title("STWM_D")
-        plt.text(37, 8, str("Abtast:% d" % N))
-        plt.text(37, 7, str("Wert vom Data Stream: % d" % st))
-        if D[m, n] < Threshold:
-            x_path, y_path = zip(*path)
-            plt.plot(y_path, x_path, linewidth=5.0)
-
-        plt.subplot(4, 1, 2)
-        plt.imshow(I, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
-        plt.title("STWM_I")
-        if D[m, n] < Threshold:
-            x_path, y_path = zip(*path)
-            plt.plot(y_path, x_path, linewidth=5.0)
-
-        plt.subplot(4, 1, 3)
-        plt.plot(Q, color='red')
-        plt.title("Query Sequence")
-
-        plt.subplot(4, 1, 4)
-        plt.plot(np.array(S), color='blue')
-        plt.title("Data Stream")
-
-        plt.show()
-        plt.close()
-
-
+            print(S_matched)
         print(D)
         print(I)
         print("Abtast: % d" % N)
         print("Wert: % d" % st)
         # print(t)
+
+
+        # plot real-time data
+        plt.ion()
+        plt.clf()
+
+        # plot STWM_D
+        D_plt = plt.subplot2grid((2,3),(0,1),colspan=2)
+        D_plt.set_title("STWM_D")
+        D_plt.imshow(D, origin='lower', cmap=plt.cm.binary, interpolation='nearest')
+        if D[m, n] < Threshold:
+            x_path, y_path = zip(*path)
+            plt.plot(y_path, x_path)
+
+        # plot query sequence
+        Q_plt = plt.subplot2grid((2, 3), (0, 0), colspan=1)
+        # base = plt.gca().transData
+        # rot = transforms.Affine2D().rotate_deg(90)
+        # plt.plot(Q, transform=rot + base)
+        plt.plot(Q,color = "red")
+        Q_plt.set_title("query sequence")
+
+        # plot datastream
+        S_plt = plt.subplot2grid((2, 3), (1, 1), colspan=2)
+        ax.append(N)
+        ay.append(st)
+        plt.plot(ax, ay)
+        # plt.xlim(N, N + 3 * m)
+        S_plt.set_title("datastream")
+
+        # plot matched sequence
+        Sm_plt = plt.subplot2grid((2, 3), (1, 0), colspan=1)
+        plt.plot(S_matched,color = "green")
+        Sm_plt.set_title("matched sequence")
+
+        plt.pause(0.01)
+        plt.ioff()
+
 
 
 
