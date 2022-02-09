@@ -13,9 +13,10 @@ import csv
 def dist_func(x, y):
     return abs(x - y)
 
-# query sequence. Test:[1,2,3,2,1]
+# query sequence. Test
 Q = np.array([1,2,3,2,1,2,3,4,5,3,2,1])
 # Q = np.loadtxt("CMT_current.csv")
+# Q = np.loadtxt("Pulse_current.csv")
 # length of query sequence
 m = len(Q)
 # threshold for if we find the path
@@ -39,6 +40,7 @@ I = np.zeros([m+1,n+1])
 # define S_full for test.
 S_full = np.array([1,2,3,2,1,2,3,4,5,3,2,1,7,7,12,15,4,3,8,14,5,1,2,3,2,1,2,3,4,5,6,3,2,1,1,0,4,2,3,6,7,8,2,2,3,2,3,2,3,4,1,2,3,2,1,2,2,3,4,5,6,3,2,1,0,8,10,3,4,5])
 # S_full = np.loadtxt("TEST_current.csv")
+# S_full = np.loadtxt("CMT-Puls_current.csv")
 S = [] # S is timestream.
 S_matched = 0
 ax = []
@@ -114,8 +116,8 @@ for N , st in enumerate(S_full):
             print(path[::-1],count)
 
             print(S_matched)
-        print(D)
-        print(I)
+        # print(D)
+        # print(I)
         print("Abtast: % d" % N)
         print("Wert: % d" % st)
         # print(t)
@@ -222,8 +224,8 @@ for N , st in enumerate(S_full):
                     count = count + 1
             print(path[::-1],count)
             print(S_matched)
-        print(D)
-        print(I)
+        # print(D)
+        # print(I)
         print("Abtast: % d" % N)
         print("Wert: % d" % st)
         # print(t)
