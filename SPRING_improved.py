@@ -1,6 +1,8 @@
 
 # SPRING improved
+from numba import cuda
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 from matplotlib import transforms
 import time
@@ -11,16 +13,16 @@ import csv
 
 # define distance function
 def dist_func(x, y):
-    return abs(x - y)
+    return np.square(x - y)
 
 # query sequence. Test
-Q = np.array([1,2,3,2,1,2,3,4,5,3,2,1])
+# Q = np.array([1,2,3,2,1,2,3,4,5,3,2,1])
 # Q = np.loadtxt("CMT_current.csv")
-# Q = np.loadtxt("Pulse_current.csv")
+Q = np.loadtxt("Pulse_current.csv")
 # length of query sequence
 m = len(Q)
 # threshold for if we find the path
-Threshold = 5
+Threshold = 16000
 
 '''
  Define a STWM (subsequence time warping matrix) with (m+1) rows.
@@ -38,8 +40,8 @@ D[1:m+1,0] = np.inf # value of the index 0 is infinity.
 I = np.zeros([m+1,n+1])
 
 # define S_full for test.
-S_full = np.array([1,2,3,2,1,2,3,4,5,3,2,1,7,7,12,15,4,3,8,14,5,1,2,3,2,1,2,3,4,5,6,3,2,1,1,0,4,2,3,6,7,8,2,2,3,2,3,2,3,4,1,2,3,2,1,2,2,3,4,5,6,3,2,1,0,8,10,3,4,5])
-# S_full = np.loadtxt("TEST_current.csv")
+# S_full = np.array([1,2,3,2,1,2,3,4,5,3,2,1,7,7,12,15,4,3,8,14,5,1,2,3,2,1,2,3,4,5,6,3,2,1,1,0,4,2,3,6,7,8,2,2,3,2,3,2,3,4,1,2,3,2,1,2,2,3,4,5,6,3,2,1,0,8,10,3,4,5])
+S_full = np.loadtxt("TEST_current.csv")
 # S_full = np.loadtxt("CMT-Puls_current.csv")
 S = [] # S is timestream.
 S_matched = 0
@@ -52,7 +54,7 @@ ay = []
 for N , st in enumerate(S_full):
     st = st
     S.append(st)
-    time.sleep(0.1)
+    # time.sleep(1/239500)
     N = N+1
     # t =
 
