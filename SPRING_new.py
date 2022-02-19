@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import numba as nb
+from numba import cuda,jit
 
 Q = np.loadtxt("Pulse_current.csv")
-S_full = np.loadtxt("TEST_current.csv")
+S_full = np.loadtxt("Test_current.csv")
 # Q = np.array([1,2,3,2,1,2,3,4,5,3,2,1])
 # S_full = np.array([1,2,3,2,1,2,3,4,5,3,2,1,7,7,12,15,4,3,8,14,5,1,2,3,2,1,2,3,4,5,6,3,2,1,1,0,4,2,3,6,7,8,2,2,3,2,3,2,3,4,1,2,3,2,1,2,2,3,4,5,6,3,2,1,0,8,10,3,4,5])
 threshold = 36500
@@ -16,7 +16,8 @@ I = np.zeros([m,n])
 # ax = np.array([])
 # ay = np.array([])
 
-@nb.jit(nopython=True)
+# @cuda.jit
+@jit(nopython=True)
 def dist_func(x, y):
     return np.square(x - y)
 
@@ -42,8 +43,8 @@ def plot():
     plt.pause(0.002)
     plt.ioff()
 
-
-@nb.jit(nopython=True)
+# @cuda.jit
+@jit(nopython=True)
 def update_stwm(D_unupdated,I_unupdated,sampling,current_value):
 
     D = D_unupdated
@@ -77,7 +78,8 @@ def update_stwm(D_unupdated,I_unupdated,sampling,current_value):
     return D, I
 
 
-@nb.jit(nopython=True)
+# @cuda.jit
+@jit(nopython=True)
 def track_path(D_updated,I_updated,time_stream,sampling):
     D = D_updated
     I = I_updated
@@ -122,6 +124,7 @@ def track_path(D_updated,I_updated,time_stream,sampling):
     return path, S_matched[:-1]
 
 
+
 N = 0
 while True:
     st = S_full[N]
@@ -130,14 +133,13 @@ while True:
 
     D,I = update_stwm(D,I,N,st)
 
-
     if D[m - 1, 0] < threshold:
         path , S_matched = track_path(D,I,S,N)
-    print(D,I)
+    # print(D,I)
     print(f"Abtast: {N + 1}")
     print(f"Wert: {st}")
 
-    plot()
+    # plot()
 
     if N >= len(S_full) - 1:
         break
